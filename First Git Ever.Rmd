@@ -9,22 +9,46 @@ output:
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## R Markdown
+## Pre-class 1 Exercises
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+The warm-up for class will use the mtcars dataset which is always present in R.
+The following code shows you how load the dataset
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
-
-```{r cars}
-summary(cars)
+```{r load the data}
+pacman::p_load(pacman, tidyverse) #laod packages
+? mtcars # what are the variables
+cars <- mtcars %>% rownames_to_column(var = "type") # tranform to tibble
 ```
 
-## Including Plots
 
-You can also embed plots, for example:
+This a brief re-introduction to the tidyverse package in R
 
-```{r pressure, echo=FALSE}
-plot(pressure)
+This is something we went through during 1st semester so you should be able to do it, however if the summer have been to harsh I recommend consulting R for data science chapter 5: https://r4ds.had.co.nz
+```{r}
+# Using mutate - convert miles per gallon to liters
+cars<-mutate(cars,mpl=mpg/3.78541)
+# Using filter - find all the cars which have more that 4 gears and are automatic
+filter(cars,gear>=4,am==0)
+# Using select - create a column dataframe with only miles pr. gallon, weight and number og gears
+cars2<-cars %>% select(mpg,wt,gear)
+# Using arrange - What cars are most fuel efficient? (lowest miles pr. liter/gallon)
+cars %>% arrange(desc(mpl))
+# Using Group_by and summarise - Find out how many cars have 3 gears, how many have 4 and how many have 5 (tip use n(), with summarise to count number of occurences)
+cars %>% group_by(gear) %>% summarise(n()) 
+# If you haven't yet, solve the above task using pipe, they look like this '%>%' and can be read as 'then' e.g. the following lines:
+mtcars %>% 
+  mutate(number = 200) %>% 
+  summarise(sum_num = sum(number)) %>% 
+  mutate(n_row = sum_num / 200)
+# can be read as 'take mtcars, 
+  # THEN add a column called numbers which is equal to 200
+  # THEN the summarise the using the sum of numbers 
+  # THEN divide the sum of the number by 200 to get the number of rows
+
+#create some sort of plot plotting the data
+cars$gear<-as.factor(cars$gear)
+ggplot(cars,aes(gear,mpl,fill=gear))+geom_bar(stat="summary")+scale_fill_manual(values=c("skyblue", "blue","dark blue"))
+
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
